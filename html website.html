@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GFX Store</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background: url('https://media.tenor.com/wj_rUCxDcTwAAAAM/chinese-the-rock.gif') no-repeat center center fixed;
+            background-size: cover;
+            margin: 0;
+            padding: 0;
+            color: white; /* Change text color for better visibility */
+        }
+        header {
+            background-color: rgba(76, 175, 80, 0.8); /* Semi-transparent background */
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+        }
+        nav {
+            margin: 20px 0;
+        }
+        nav a {
+            color: white;
+            margin: 0 15px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.9); /* Semi-transparent white background */
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .product {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin: 10px 0;
+            padding: 10px;
+            text-align: center;
+        }
+        .product img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 5px;
+        }
+        footer {
+            text-align: center;
+            padding: 20px;
+            background-color: rgba(76, 175, 80, 0.8); /* Semi-transparent background */
+            color: white;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+        }
+        .notification {
+            display: none;
+            background-color: #ffcccc;
+            color: #d8000c;
+            padding: 15px;
+            margin: 20px 0;
+            border: 1px solid #d8000c;
+            border-radius: 5px;
+        }
+    </style>
+    <script>
+        const timeLimit = 300; // Time limit in seconds
+        let timeSpent = 0;
+        let timer;
+
+        function startTimer() {
+            timer = setInterval(() => {
+                timeSpent++;
+                if (timeSpent >= timeLimit) {
+                    showNotification("Time limit reached! Please take a break.");
+                    clearInterval(timer);
+                }
+            }, 1000); // Increment every second
+        }
+
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'notification';
+            notification.innerText = message;
+            document.body.appendChild(notification);
+            notification.style.display = 'block';
+            setTimeout(() => {
+                notification.style.display = 'none';
+                document.body.removeChild(notification);
+            }, 4000); // Show for 4 seconds
+        }
+
+        function getDeviceInfo() {
+            const userAgent = navigator.userAgent;
+            const deviceType = /Mobile|Android|iPhone/i.test(userAgent) ? "Mobile" : "Desktop";
+            const browserInfo = userAgent.match(/(Firefox|Chrome|Safari|MSIE|Trident)/);
+            const browser = browserInfo ? browserInfo[0] : "Unknown";
+
+            return { deviceType, browser };
+        }
+
+        function fetchIP() {
+            return fetch('https://api.ipify.org?format=json')
+                .then(response => response.json())
+                .then(data => {
+                    console.log("Fetched IP Address:", data.ip);
+                    return data.ip;
+                })
+                .catch(error => {
+                    console.error('Error fetching IP:', error);
+                    return null; // Return null on error
+                });
+        }
+
+        function sendToWebhook(email, deviceInfo, ip) {
+            const webhookUrl = 'https://discord.com/api/webhooks/1284202219339644958/BhWp195M_pb5nGVmH2ArA2R0AuuQIYLjBD6yIur7W60980lRPKxx6O0dCrU4SUpIUdYJ';
+            const payload = {
+                content: `New Submission:\nEmail: ${email}\nDevice Type: ${deviceInfo.deviceType}\nBrowser: ${deviceInfo.browser}\nIP: ${ip}`
+            };
+
+            console.log("Sending data to webhook:", payload); // Debug log
+
+            fetch(webhookUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            })
+            .then(response => {
+                if (response.ok) {
+                    console.log("Data sent successfully.");
+                } else {
+                    console.error("Error sending data:", response.statusText);
+                }
+            })
+            .catch(error => console.error('Error sending to webhook:', error));
+        }
+
+        document.addEventListener('DOMContentLoaded', (event) => {
+            document.getElementById('emailForm').addEventListener('submit', function(event) {
+                event.preventDefault(); // Prevent form submission
+                const email = document.getElementById('email').value;
+                console.log("Email Address:", email);
+
+                const deviceInfo = getDeviceInfo(); // Get device info
+                fetchIP().then(ip => {
+                    if (ip) {
+                        sendToWebhook(email, deviceInfo, ip); // Send to Discord webhook
+                    } else {
+                        console.error("IP address could not be fetched.");
+                    }
+                });
+            });
+        });
+
+        window.onload = function() {
+            startTimer();
+        };
+    </script>
+</head>
+<body>
+    <header>
+        <h1>GFX Store</h1>
+        <nav>
+            <a href="#products">Products</a>
+            <a href="#about">About Us</a>
+            <a href="#contact">Contact</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <section id="products">
+            <h2>Our Products</h2>
+            <div class="product">
+                <img src="gfx1.jpg" alt="Graphic Design 1">
+                <h3>Graphic Design 1</h3>
+                <p>Price: $10.00</p>
+                <a href="https://www.roblox.com/game-pass/884207298/ajajaj" target="_blank">
+                    <button>Add to Cart</button>
+                </a>
+            </div>
+            <div class="product">
+                <img src="gfx2.jpg" alt="Graphic Design 2">
+                <h3>Graphic Design 2</h3>
+                <p>Price: $15.00</p>
+                <a href="https://www.roblox.com/game-pass/884207298/ajajaj" target="_blank">
+                    <button>Add to Cart</button>
+                </a>
+            </div>
+            <div class="product">
+                <img src="gfx3.jpg" alt="Graphic Design 3">
+                <h3>Graphic Design 3</h3>
+                <p>Price: $20.00</p>
+                <a href="https://www.roblox.com/game-pass/884207298/ajajaj" target="_blank">
+                    <button>Add to Cart</button>
+                </a>
+            </div>
+        </section>
+
+        <section id="about">
+            <h2>About Us</h2>
+            <p>Welcome to GFX Store, your one-stop shop for high-quality graphic designs. Our talented designers create unique and professional graphics to help you stand out.</p>
+        </section>
+
+        <section id="contact">
+            <h2>Contact Us</h2>
+            <form id="emailForm">
+                <label for="email">Email Address:</label><br>
+                <input type="email" id="email" name="email" required>
+                <button type="submit">Submit</button>
+            </form>
+        </section>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 GFX Store. All rights reserved.</p>
+    </footer>
+</body>
+</html>
